@@ -2,7 +2,8 @@ import {
     listContacts, 
     getContactById,
     removeContact,
-    addContact
+    addContact,
+    updContacts
 } from "../services/contactsServices.js"
 import { createContactSchema } from "../schemas/contactsSchemas.js";
 import {updateContactSchema} from '../schemas/contactsSchemas.js'
