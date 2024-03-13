@@ -1,12 +1,8 @@
-
-
-
 import { Contact } from '../db/contact.js';
 
 import {
     createContactSchema,
-    updateContactSchema,
-    updateFavoriteSchema
+    updateContactSchema
 } from "../schemas/contactsSchemas.js";
 
 
