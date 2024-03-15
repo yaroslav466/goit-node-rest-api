@@ -8,7 +8,8 @@ import {
 
 export const getAllContacts = async (req, res) => {
     try {
-        const contacts = await Contact.find();
+        const { _id: owner } = req.user;
+        const contacts = await Contact.find({owner}, {skip, limit}).populate("owner", "name email");
               res.status(200).json(contacts);
     } catch (error) {
         res.status(500).json({
@@ -23,7 +24,8 @@ export const createContact = async (req, res) => {
        if (validationResult.error) {
             return res.status(400).json({ message: validationResult.error.message });
         }
-        const newContact = await Contact.create(req.body);
+        const {_id: owner } = req.user;
+        const newContact = await Contact.create({...req.body, owner});
         res.status(201).json(newContact);
     } catch (error) {
         res.status(500).json({
@@ -87,11 +89,15 @@ export const updateContact = async (req, res, next) => {
 export const updateFavorite = async (req, res, next) => {
   const id = req.params.id;
   const { favorite } = req.body;
+    const owner = res.user.id;
 
   try {
-    const data = await Contact.findByIdAndUpdate(id, { favorite, _id: id });
+    const data = await Contact.findByIdAndUpdate({ _id: id, owner: owner },
+      favorite,
+      { new: true }
+    );
 
-    if (data === null) {
+    if (!data) {
       return res.status(404).json({ message: "Not found contact" });
     }
     res.send(data);
