@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-
 import User from "../db/user.js";
 
 export const auth = (req, res, next) => {

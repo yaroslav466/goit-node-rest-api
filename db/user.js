@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-
+import gravatar from "gravatar";
 
 export const userSchema = new Schema({
     
@@ -21,6 +21,10 @@ export const userSchema = new Schema({
         type: String,
         default: null,
     },
+    avatarURL: {
+    type: String,
+    default: gravatar.url(),
+  },
 
 }, { versionKey: false, timestamps: true });
 

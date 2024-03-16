@@ -4,14 +4,19 @@ import {
   loginUsers,
   logoutUser,
   updateSubscription,
+  getAvatar,
+  uploadAvatar,
 } from "../controllers/usersControllers.js";
-import { auth } from "../controllers/auth.js";
+import { auth } from "../middleware/auth.js";
+import upload from "../middleware/upload.js";
 
-const usersRouter = express.Router();
+const authRouter = express.Router();
 
-usersRouter.post("/register", registerUsers);
-usersRouter.post("/login", loginUsers);
-usersRouter.get("/logout", auth, logoutUser);
-usersRouter.patch("/", auth, updateSubscription);
+authRouter.post("/register", registerUsers);
+authRouter.post("/login", loginUsers);
+authRouter.get("/logout", auth, logoutUser);
+authRouter.patch("/", auth, updateSubscription);
+authRouter.patch("/avatar", auth, upload.single("avatarURL"), uploadAvatar);
+authRouter.get("/avatar", auth, getAvatar);
 
-export default usersRouter;
+export default authRouter;

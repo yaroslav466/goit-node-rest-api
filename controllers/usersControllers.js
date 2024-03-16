@@ -1,6 +1,9 @@
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import User from "../db/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Jimp from "jimp";
 import { usersRegisterSchema } from "../schemas/usersSchemas.js";
 import { subscriptionSchema } from "../schemas/subsSchemas.js";
 
@@ -100,10 +103,60 @@ export const updateSubscription = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(res.user.id, {
       subscription: value.subscription,
-    });
+    }); 
 
     res.status(204).end();
   } catch (error) {
     next(error);
   }
 };
+
+export const getAvatar = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.user.id);
+
+    if (user === null) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    if (user.avatarURL === null) {
+      return res.status(404).send({ message: "Avatar not found" });
+    }
+
+    res.sendFile(path.join(process.cwd(), "public/avatars", user.avatarURL));
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const uploadAvatar = async (req, res, next) => {
+  const oldPath = req.file.path;
+  const newPath = path.join(process.cwd(), "public/avatars", req.file.filename);
+
+  try {
+    await fs.rename(oldPath, newPath);
+
+    await Jimp.read(newPath)
+      .then((file) => {
+        return file.resize(250, 250).write(newPath);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { avatarURL: req.file.filename },
+      { new: true }
+    );
+
+    if (user === null) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+}
+
