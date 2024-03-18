@@ -22,9 +22,19 @@ export const userSchema = new Schema({
         default: null,
     },
     avatarURL: {
-    type: String,
-    default: gravatar.url(),
-  },
+        type: String,
+        default: gravatar.url(),
+    },
+    verify: {
+        type: Boolean,
+        default: false,
+    },
+    verificationToken: {
+        type: String,
+        required: [true, 'Verify token is required'],
+    },
+
+
 
 }, { versionKey: false, timestamps: true });
 
